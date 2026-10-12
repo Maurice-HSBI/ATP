@@ -1,0 +1,83 @@
+:root {
+  --ink: #172522;
+  --text: #3d4a47;
+  --muted: #6e7a77;
+  --line: #ccd5d0;
+  --line-strong: #aab8b2;
+  --surface: #ffffff;
+  --surface-soft: #f3f6f3;
+  --page: #e7ece8;
+  --teal: #176b68;
+  --teal-dark: #10514f;
+  --teal-soft: #dceceb;
+  --coral: #d2643f;
+  --yellow: #d5a326;
+  --danger: #a63f32;
+  --success: #28754b;
+  --shadow: 0 8px 24px rgba(36, 55, 49, 0.08);
+  --sans: Bahnschrift, 'DIN Alternate', 'Segoe UI', sans-serif;
+  --mono: 'Cascadia Code', Consolas, monospace;
+
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.45;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--text);
+  background: var(--page);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-width: 320px;
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--page);
+  background-image:
+    linear-gradient(rgba(52, 79, 70, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(52, 79, 70, 0.035) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  letter-spacing: 0;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+button:disabled,
+input:disabled,
+select:disabled {
+  cursor: not-allowed;
+}
