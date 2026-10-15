@@ -198,8 +198,9 @@ function getCalculationLines(
       return {
         id: `sensor-${sensor.id}`,
         label: `Sensor: ${sensor.name}`,
-        formula: 'Q = Anzahl × (I aktiv × t aktiv + I Schlaf × t Schlaf) / 3.600',
-        values: `${formatNumber(quantity, 0)} × (${formatNumber(activeCurrentMa, 3)} mA × ${formatNumber(activeSeconds, 1)} s + ${formatNumber(sleepCurrentMa, 3)} mA × ${formatNumber(sleepSeconds, 1)} s) / 3.600`,
+        formula:
+          'Q Tag = Anzahl × (I aktiv × t aktiv + I Schlaf × t Schlaf) / (60 × 60)',
+        values: `${formatNumber(quantity, 0)} × (${formatNumber(activeCurrentMa, 3)} mA × ${formatNumber(activeSeconds, 1)} s + ${formatNumber(sleepCurrentMa, 3)} mA × ${formatNumber(sleepSeconds, 1)} s) / (60 × 60 = 3.600)`,
         chargeMah:
           (quantity *
             (activeCurrentMa * activeSeconds + sleepCurrentMa * sleepSeconds)) /
@@ -211,15 +212,16 @@ function getCalculationLines(
     {
       id: 'base',
       label: 'Grundlast',
-      formula: 'Q = I × t',
+      formula: 'Q Tag = I × 24 h',
       values: `${formatNumber(baseCurrentMa, 3)} mA × 24 h`,
       chargeMah: baseCurrentMa * 24,
     },
     {
       id: 'mcu',
       label: 'Mikrocontroller',
-      formula: 'Q = (I aktiv × t aktiv + I Ruhe × t Ruhe) / 3.600',
-      values: `(${formatNumber(nonNegative(config.mcu.activeCurrentMa), 3)} mA × ${formatNumber(mcuActiveSeconds, 1)} s + ${formatNumber(mcuRestCurrentMa, 3)} mA × ${formatNumber(mcuRestSeconds, 1)} s) / 3.600`,
+      formula:
+        'Q Tag = (I aktiv × t aktiv + I Ruhe × t Ruhe) / (60 × 60)',
+      values: `(${formatNumber(nonNegative(config.mcu.activeCurrentMa), 3)} mA × ${formatNumber(mcuActiveSeconds, 1)} s + ${formatNumber(mcuRestCurrentMa, 3)} mA × ${formatNumber(mcuRestSeconds, 1)} s) / (60 × 60 = 3.600)`,
       chargeMah:
         (nonNegative(config.mcu.activeCurrentMa) * mcuActiveSeconds +
           mcuRestCurrentMa * mcuRestSeconds) /
@@ -228,8 +230,9 @@ function getCalculationLines(
     {
       id: 'radio',
       label: 'Funk',
-      formula: 'Q = (I TX × t TX + I RX × t RX + I Schlaf × t Schlaf) / 3.600',
-      values: `(${formatNumber(nonNegative(config.radio.txCurrentMa), 3)} mA × ${formatNumber(txSeconds, 1)} s + ${formatNumber(nonNegative(config.radio.rxCurrentMa), 3)} mA × ${formatNumber(rxSeconds, 1)} s + ${formatNumber(nonNegative(config.radio.sleepCurrentUa) / 1000, 3)} mA × ${formatNumber(radioSleepSeconds, 1)} s) / 3.600`,
+      formula:
+        'Q Tag = (I TX × t TX + I RX × t RX + I Schlaf × t Schlaf) / (60 × 60)',
+      values: `(${formatNumber(nonNegative(config.radio.txCurrentMa), 3)} mA × ${formatNumber(txSeconds, 1)} s + ${formatNumber(nonNegative(config.radio.rxCurrentMa), 3)} mA × ${formatNumber(rxSeconds, 1)} s + ${formatNumber(nonNegative(config.radio.sleepCurrentUa) / 1000, 3)} mA × ${formatNumber(radioSleepSeconds, 1)} s) / (60 × 60 = 3.600)`,
       chargeMah: result.components.find((component) => component.id === 'radio')?.chargeMah ?? 0,
     },
     ...sensorLines,
@@ -1228,6 +1231,12 @@ function CalculationPanel({
           />
           <span>Live mit den Eingabewerten</span>
         </summary>
+        <p className="calculation-unit-note">
+          <strong>Tagesbezug:</strong> Die Aktiv- und Ruhezeiten jeder Position
+          ergeben zusammen 86.400 s = 24 h. Dadurch ist Q Tag die Ladung eines
+          vollständigen Tages. Die Division durch 60 × 60 = 3.600 rechnet
+          lediglich mA·s in mAh um.
+        </p>
         <div className="calculation-table-wrap">
           <table>
             <thead>

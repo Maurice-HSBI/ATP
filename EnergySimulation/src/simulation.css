@@ -875,6 +875,12 @@
   overflow-x: auto;
 }
 
+.calculation-unit-note {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
 .calculation-panel table {
   width: 100%;
   min-width: 760px;
