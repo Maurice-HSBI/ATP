@@ -138,6 +138,138 @@ function formatAutonomy(days: number): string {
     : `${formatNumber(days, 0)} Tage`
 }
 
+function nonNegative(value: number): number {
+  return Number.isFinite(value) ? Math.max(0, value) : 0
+}
+
+interface CalculationLine {
+  id: string
+  label: string
+  formula: string
+  values: string
+  chargeMah: number
+}
+
+interface SolarCalculationLine {
+  id: string
+  label: string
+  formula: string
+  values: string
+  result: string
+}
+
+function getCalculationLines(
+  config: SimulationConfig,
+  result: ReturnType<typeof calculateSimulation>,
+): CalculationLine[] {
+  const daySeconds = 86_400
+  const baseCurrentMa = nonNegative(config.baseLoadUa) / 1000
+  const mcuActiveSeconds = Math.min(
+    daySeconds,
+    (result.measurementEventsPerDay *
+      nonNegative(config.mcu.measurementDurationMs) +
+      result.totalTransmissionsPerDay *
+        nonNegative(config.mcu.transmissionDurationMs)) /
+      1000,
+  )
+  const mcuRestSeconds = daySeconds - mcuActiveSeconds
+  const mcuRestCurrentMa =
+    config.networkMode === 'p2p'
+      ? nonNegative(config.mcu.deepSleepCurrentUa) / 1000
+      : nonNegative(config.mcu.meshStandbyCurrentUa) / 1000
+  const txSeconds = result.txAirtimeSecondsPerDay
+  const rxSeconds = result.rxHoursPerDay * 3600
+  const radioSleepSeconds = Math.max(0, daySeconds - txSeconds - rxSeconds)
+
+  const sensorLines = config.sensors
+    .filter((sensor) => sensor.enabled)
+    .map((sensor) => {
+      const activeSeconds = Math.min(
+        daySeconds,
+        (result.measurementEventsPerDay *
+          nonNegative(sensor.activeDurationMs)) /
+          1000,
+      )
+      const sleepSeconds = daySeconds - activeSeconds
+      const quantity = nonNegative(sensor.quantity)
+      const activeCurrentMa = nonNegative(sensor.activeCurrentMa)
+      const sleepCurrentMa = nonNegative(sensor.sleepCurrentUa) / 1000
+
+      return {
+        id: `sensor-${sensor.id}`,
+        label: `Sensor: ${sensor.name}`,
+        formula: 'Q = Anzahl × (I aktiv × t aktiv + I Schlaf × t Schlaf) / 3.600',
+        values: `${formatNumber(quantity, 0)} × (${formatNumber(activeCurrentMa, 3)} mA × ${formatNumber(activeSeconds, 1)} s + ${formatNumber(sleepCurrentMa, 3)} mA × ${formatNumber(sleepSeconds, 1)} s) / 3.600`,
+        chargeMah:
+          (quantity *
+            (activeCurrentMa * activeSeconds + sleepCurrentMa * sleepSeconds)) /
+          3600,
+      }
+    })
+
+  return [
+    {
+      id: 'base',
+      label: 'Grundlast',
+      formula: 'Q = I × t',
+      values: `${formatNumber(baseCurrentMa, 3)} mA × 24 h`,
+      chargeMah: baseCurrentMa * 24,
+    },
+    {
+      id: 'mcu',
+      label: 'Mikrocontroller',
+      formula: 'Q = (I aktiv × t aktiv + I Ruhe × t Ruhe) / 3.600',
+      values: `(${formatNumber(nonNegative(config.mcu.activeCurrentMa), 3)} mA × ${formatNumber(mcuActiveSeconds, 1)} s + ${formatNumber(mcuRestCurrentMa, 3)} mA × ${formatNumber(mcuRestSeconds, 1)} s) / 3.600`,
+      chargeMah:
+        (nonNegative(config.mcu.activeCurrentMa) * mcuActiveSeconds +
+          mcuRestCurrentMa * mcuRestSeconds) /
+        3600,
+    },
+    {
+      id: 'radio',
+      label: 'Funk',
+      formula: 'Q = (I TX × t TX + I RX × t RX + I Schlaf × t Schlaf) / 3.600',
+      values: `(${formatNumber(nonNegative(config.radio.txCurrentMa), 3)} mA × ${formatNumber(txSeconds, 1)} s + ${formatNumber(nonNegative(config.radio.rxCurrentMa), 3)} mA × ${formatNumber(rxSeconds, 1)} s + ${formatNumber(nonNegative(config.radio.sleepCurrentUa) / 1000, 3)} mA × ${formatNumber(radioSleepSeconds, 1)} s) / 3.600`,
+      chargeMah: result.components.find((component) => component.id === 'radio')?.chargeMah ?? 0,
+    },
+    ...sensorLines,
+  ]
+}
+
+function getSolarCalculationLines(
+  config: SimulationConfig,
+  result: ReturnType<typeof calculateSimulation>,
+): SolarCalculationLine[] {
+  const peakSunHours = nonNegative(config.solar.peakSunHours)
+  const lightFraction = Math.min(100, nonNegative(config.solar.lightPercent)) / 100
+  const efficiencyFraction =
+    Math.min(100, nonNegative(config.solar.efficiencyPercent)) / 100
+
+  return [
+    {
+      id: 'solar-yield',
+      label: 'Solarertrag',
+      formula: 'E Solar = P Panel × Sonnenstunden × Licht × Wirkungsgrad',
+      values: `${formatNumber(nonNegative(config.solar.panelPowerW), 3)} W × ${formatNumber(peakSunHours, 2)} h × ${formatNumber(lightFraction, 3)} × ${formatNumber(efficiencyFraction, 3)}`,
+      result: `${formatEnergy(result.solarYieldWhPerDay)} / Tag`,
+    },
+    {
+      id: 'solar-balance',
+      label: 'Tagesbilanz',
+      formula: 'Bilanz = E Solar − E Verbrauch',
+      values: `${formatEnergy(result.solarYieldWhPerDay)} − ${formatEnergy(result.dailyEnergyWh)}`,
+      result: `${result.solarBalanceWhPerDay >= 0 ? '+' : ''}${formatEnergy(result.solarBalanceWhPerDay)} / Tag`,
+    },
+    {
+      id: 'required-panel',
+      label: 'Panel mit Reserve',
+      formula: 'P Panel = E Verbrauch × Reserve / (Sonnenstunden × Licht × Wirkungsgrad)',
+      values: `${formatEnergy(result.dailyEnergyWh)} × ${formatNumber(nonNegative(config.solar.reserveFactor), 2)} / (${formatNumber(peakSunHours, 2)} h × ${formatNumber(lightFraction, 3)} × ${formatNumber(efficiencyFraction, 3)})`,
+      result: formatPower(result.requiredPanelPowerW),
+    },
+  ]
+}
+
 function SolarEnvironmentIcon({ environment }: { environment: SolarEnvironment }) {
   if (environment === 'forest') return <TreePine size={15} aria-hidden="true" />
   if (environment === 'city') return <Building2 size={15} aria-hidden="true" />
@@ -178,6 +310,8 @@ function App() {
     'calculator',
   )
   const result = calculateSimulation(config)
+  const calculationLines = getCalculationLines(config, result)
+  const solarCalculationLines = getSolarCalculationLines(config, result)
   const activePreset =
     presets.find((preset) => preset.config.profileName === config.profileName)
       ?.id ?? 'custom'
@@ -967,6 +1101,73 @@ function App() {
                 </div>
               ))}
             </div>
+          </section>
+
+          <section className="result-panel calculation-panel">
+            <details open>
+              <summary>
+                <ResultHeading
+                  icon={<Calculator size={18} />}
+                  title="Rechenaufstellung"
+                />
+                <span>Live mit den Eingabewerten</span>
+              </summary>
+              <div className="calculation-table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">Position</th>
+                      <th scope="col">Formel und eingesetzte Werte</th>
+                      <th scope="col">mAh/Tag</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {calculationLines.map((line) => (
+                      <tr key={line.id}>
+                        <th scope="row">{line.label}</th>
+                        <td>
+                          <span className="formula">{line.formula}</span>
+                          <span className="formula-values">{line.values}</span>
+                        </td>
+                        <td>{formatNumber(line.chargeMah, 3)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <th scope="row" colSpan={2}>
+                        Summe Tagesverbrauch
+                      </th>
+                      <td>{formatNumber(result.dailyChargeMah, 3)}</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+              <div className="solar-calculation">
+                <h3>Solarbilanz</h3>
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">Position</th>
+                      <th scope="col">Formel und eingesetzte Werte</th>
+                      <th scope="col">Ergebnis</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {solarCalculationLines.map((line) => (
+                      <tr key={line.id}>
+                        <th scope="row">{line.label}</th>
+                        <td>
+                          <span className="formula">{line.formula}</span>
+                          <span className="formula-values">{line.values}</span>
+                        </td>
+                        <td>{line.result}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </details>
           </section>
 
           <section className="result-panel">

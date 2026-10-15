@@ -791,6 +791,149 @@
   text-align: right;
 }
 
+.calculation-panel {
+  padding: 0;
+}
+
+.calculation-panel details {
+  overflow: hidden;
+}
+
+.calculation-panel summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.calculation-panel summary::-webkit-details-marker {
+  display: none;
+}
+
+.calculation-panel summary::after {
+  content: '+';
+  color: var(--teal);
+  font-family: var(--mono);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.calculation-panel details[open] summary {
+  border-bottom: 1px solid var(--line);
+}
+
+.calculation-panel details[open] summary::after {
+  content: '−';
+}
+
+.calculation-panel .result-heading {
+  margin: 0;
+}
+
+.calculation-panel summary > span {
+  color: var(--muted);
+  font-size: 0.68rem;
+  text-align: right;
+}
+
+.calculation-table-wrap,
+.solar-calculation {
+  overflow: hidden;
+}
+
+.calculation-panel table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 0.72rem;
+}
+
+.calculation-panel th,
+.calculation-panel td {
+  padding: 10px 12px;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line-faint);
+}
+
+.calculation-panel thead th {
+  color: var(--muted);
+  background: var(--surface-soft);
+  font-size: 0.64rem;
+  font-weight: 600;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.calculation-panel tbody th {
+  width: 25%;
+  color: var(--ink);
+  font-weight: 600;
+  text-align: left;
+}
+
+.calculation-panel td:last-child,
+.calculation-panel thead th:last-child,
+.calculation-panel tfoot td {
+  color: var(--ink);
+  font-family: var(--mono);
+  font-weight: 650;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.calculation-panel th:last-child,
+.calculation-panel td:last-child {
+  width: 18%;
+}
+
+.calculation-panel thead th:last-child {
+  text-transform: none;
+}
+
+.formula,
+.formula-values {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.formula {
+  color: var(--teal-dark);
+  font-family: var(--mono);
+  font-size: 0.67rem;
+}
+
+.formula-values {
+  margin-top: 3px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  line-height: 1.45;
+}
+
+.calculation-panel tfoot th,
+.calculation-panel tfoot td {
+  background: var(--surface-accent);
+  border-bottom: 0;
+}
+
+.calculation-panel tfoot th {
+  color: var(--ink);
+  text-align: right;
+}
+
+.solar-calculation {
+  border-top: 1px solid var(--line);
+}
+
+.solar-calculation h3 {
+  padding: 14px 12px 6px;
+  color: var(--teal);
+  font-size: 0.78rem;
+}
+
 .large-result {
   display: grid;
   gap: 3px;
