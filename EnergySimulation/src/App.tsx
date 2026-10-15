@@ -45,7 +45,7 @@ import type {
   SolarOrientation,
 } from './types'
 
-const STORAGE_KEY = 'energy-simulation-config-v1'
+const STORAGE_KEY = 'energy-simulation-config-v2'
 const THEME_STORAGE_KEY = 'energy-simulation-theme-v1'
 
 type Theme = 'light' | 'dark'
@@ -581,6 +581,9 @@ function App() {
               </option>
             ))}
           </select>
+          <span>
+            {presets.find((preset) => preset.id === activePreset)?.description}
+          </span>
         </label>
         <div className="network-modes" role="group" aria-label="Netzmodus">
           <ModeButton
@@ -764,7 +767,7 @@ function App() {
                     label="Mesh-Standby"
                     value={config.mcu.meshStandbyCurrentUa}
                     unit="µA"
-                    hint="µC bleibt für Routing und Empfangsfenster betriebsbereit"
+                    hint="240 µA als Light-Sleep-Annahme für ESP32-S3; zusätzliche CPU-Aktivität für Routing und RX-Verarbeitung über die Aktivzeiten erfassen"
                     onChange={(value) => updateMcu({ meshStandbyCurrentUa: value })}
                   />
                 )}

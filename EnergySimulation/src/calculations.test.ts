@@ -11,13 +11,11 @@ describe('calculateLoRaAirtimeMs', () => {
 })
 
 describe('calculateSimulation', () => {
-  it('stays close to the documented RAK4631 planning case', () => {
+  it('matches the documented ESP32-S3 planning case', () => {
     const result = calculateSimulation(getDefaultConfig())
 
-    expect(result.averageCurrentMa * 1000).toBeGreaterThan(73.5)
-    expect(result.averageCurrentMa * 1000).toBeLessThan(75.5)
-    expect(result.dailyChargeMah).toBeGreaterThan(1.76)
-    expect(result.dailyChargeMah).toBeLessThan(1.82)
+    expect(result.averageCurrentMa * 1000).toBeCloseTo(214.4, 1)
+    expect(result.dailyChargeMah).toBeCloseTo(5.146, 3)
     expect(result.ownTransmissionsPerDay).toBe(48)
   })
 
@@ -28,8 +26,8 @@ describe('calculateSimulation', () => {
 
     const result = calculateSimulation(config)
 
-    expect(result.averageCurrentMa).toBeGreaterThan(17)
-    expect(result.averageCurrentMa).toBeLessThan(17.2)
+    expect(result.averageCurrentMa).toBeGreaterThan(17.4)
+    expect(result.averageCurrentMa).toBeLessThan(17.5)
     expect(result.rxHoursPerDay).toBeGreaterThan(23.9)
   })
 
@@ -52,7 +50,7 @@ describe('calculateSimulation', () => {
 
   it('updates the autonomy prediction when solar conditions change', () => {
     const config = getDefaultConfig()
-    config.solar.panelPowerW = 0.01
+    config.solar.panelPowerW = 0.02
     config.solar.lightPercent = 5
     const shaded = calculateSimulation(config)
 

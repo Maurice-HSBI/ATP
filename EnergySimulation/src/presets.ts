@@ -59,23 +59,23 @@ export function getSolarLightPercent(
 }
 
 const planningConfig: SimulationConfig = {
-  profileName: 'RAK4631 · Planung',
+  profileName: 'Heltec Wireless Stick Lite V3 · Planung',
   detailMode: 'basic',
   networkMode: 'p2p',
   measurementIntervalMinutes: 5,
   sendIntervalMinutes: 30,
-  baseLoadUa: 47.85,
+  baseLoadUa: 100,
   mcu: {
-    activeCurrentMa: 5,
-    deepSleepCurrentUa: 2,
-    meshStandbyCurrentUa: 10,
-    measurementDurationMs: 300,
+    activeCurrentMa: 40,
+    deepSleepCurrentUa: 8,
+    meshStandbyCurrentUa: 240,
+    measurementDurationMs: 500,
     transmissionDurationMs: 1000,
   },
   radio: {
     txCurrentMa: 92,
     rxCurrentMa: 17,
-    sleepCurrentUa: 0,
+    sleepCurrentUa: 0.6,
     rxAfterTxMs: 400,
     spreadingFactor: 9,
     bandwidthKhz: 125,
@@ -115,8 +115,8 @@ const planningConfig: SimulationConfig = {
 
 const optimizedConfig: SimulationConfig = {
   ...planningConfig,
-  profileName: 'RAK4631 · Optimiert',
-  baseLoadUa: 17.85,
+  profileName: 'Heltec Wireless Stick Lite V3 · Optimiert',
+  baseLoadUa: 20,
   radio: {
     ...planningConfig.radio,
     spreadingFactor: 7,
@@ -125,8 +125,8 @@ const optimizedConfig: SimulationConfig = {
 
 const worstCaseConfig: SimulationConfig = {
   ...planningConfig,
-  profileName: 'RAK4631 · Schlechtfall',
-  baseLoadUa: 197.85,
+  profileName: 'Heltec Wireless Stick Lite V3 · Schlechtfall',
+  baseLoadUa: 1000,
   radio: {
     ...planningConfig.radio,
     txCurrentMa: 125,
@@ -138,20 +138,20 @@ const worstCaseConfig: SimulationConfig = {
 export const presets: SimulationPreset[] = [
   {
     id: 'planning',
-    label: 'RAK4631 · Planung',
-    description: '50 µA Ruhe, SF9, 30-Minuten-Sendetakt',
+    label: planningConfig.profileName,
+    description: 'ESP32-S3 + SX1262, 100 µA Board-Grundlast, SF9; Schätzwerte',
     config: planningConfig,
   },
   {
     id: 'optimized',
-    label: 'RAK4631 · Optimiert',
-    description: '20 µA Ruhe, SF7, kurze Funkzeit',
+    label: optimizedConfig.profileName,
+    description: 'ESP32-S3 + SX1262, 20 µA Board-Grundlast, SF7; Optimierungsziel',
     config: optimizedConfig,
   },
   {
     id: 'worst-case',
-    label: 'RAK4631 · Schlechtfall',
-    description: '200 µA Ruhe, SF12, 20 dBm und langes RX-Fenster',
+    label: worstCaseConfig.profileName,
+    description: 'ESP32-S3 + SX1262, 1 mA Board-Grundlast, SF12, langes RX-Fenster; Schätzwerte',
     config: worstCaseConfig,
   },
 ]

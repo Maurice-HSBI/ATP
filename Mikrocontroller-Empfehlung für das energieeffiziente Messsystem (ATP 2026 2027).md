@@ -2,7 +2,19 @@
 
 Oct 12, 2026 · @Maurice
 
-## Ausgangspunkt: RAK WisBlock Starter Kit (RAK19007 + RAK4631)
+## Aktuelle Hardwareentscheidung (15.10.2026): ESP32-S3 + SX1262
+
+Wir verwenden einen **ESP32-S3**, beispielsweise den **Heltec Wireless Stick Lite V3** ohne OLED. **RAK4631 steht nicht zur Verfügung und ist keine Beschaffungsoption.** Heltec nennt für dieses Board ESP32-S3FN8 und SX1262; die Integration und Pinbelegung für LoRaMesher müssen im Prototyp geprüft werden.
+
+Die aktuellen Simulatorprofile und ihre vollständig dokumentierten Annahmen stehen in [EnergySimulation/README.md](EnergySimulation/README.md). Der Planungsfall verwendet 40 mA MCU-Aktivstrom, 8 µA MCU-Deep-Sleep, 240 µA MCU-Light-Sleep für Mesh, 100 µA zusätzliche Board-Grundlast und 0,6 µA Funk-Sleep. Dies sind **ungemessene Planungswerte**, keine zugesicherten Heltec-Verbrauchsdaten. Im P2P-Standardfall ergeben sich rund 214,4 µA beziehungsweise 5,146 mAh/Tag. Für Mesh sind RX-Fenster und zusätzliche CPU-Aktivzeiten separat zu bilanzieren.
+
+Quelle: [Heltec Wireless Stick Lite – Hardware, Datenblatt und Schaltplan](https://docs.heltec.org/en/node/esp32/wireless_stick_lite/index.html).
+
+## Historischer Vergleich und bisheriger Konzeptstand (RAK, nicht zur Umsetzung)
+
+**Die nachfolgenden RAK-Empfehlungen, Verbrauchsrechnungen und Beschaffungshinweise dokumentieren den früheren Vergleichsstand. Sie gelten nicht für die aktuelle ESP32-S3-Auslegung.** Insbesondere sind die bisherigen 74-µA-Rechnungen nicht auf das Heltec-Board übertragbar. Für aktuelle Standardwerte ist die oben verlinkte Simulator-Dokumentation maßgeblich.
+
+### Früherer Ausgangspunkt: RAK WisBlock Starter Kit (RAK19007 + RAK4631)
 
 Das **RAK WisBlock Starter Kit** bleibt die Low-Power-Referenz und eignet sich für P2P, LoRaWAN oder ein eigenes Mesh-Protokoll. Ein Prototyp mit **LoRaMesher** benötigt nach aktuellem Stand jedoch **ESP32 + SX1262**, weil LoRaMesher FreeRTOS und die ESP32-Plattform voraussetzt. Die endgültige Controllerwahl ist deshalb wieder offen: RAK4631 bei eigener Portierung beziehungsweise eigenem Protokoll, ESP32 + SX1262 für den kurzfristig umsetzbaren LoRaMesher-Prototyp.
 

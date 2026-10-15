@@ -495,8 +495,8 @@ export function MeshConcept() {
         >
           <InfoRow
             icon={<Cpu size={17} />}
-            title="ESP32 ist ein LoRaMesher-Zwang, kein Konzept-Zwang"
-            text="Die aktuelle LoRaMesher-Implementierung setzt ESP32, FreeRTOS und RadioLib voraus. Für den RAK4631 wäre eine Portierung oder ein eigenes Protokoll nötig."
+            title="ESP32-S3 + SX1262 als Hardwarebasis"
+            text="Geplant ist ein ESP32-S3-Board wie der Heltec Wireless Stick Lite V3. Die aktuelle LoRaMesher-Implementierung setzt ESP32, FreeRTOS und RadioLib voraus. RAK4631 steht für dieses Projekt nicht zur Verfügung."
           />
           <InfoRow
             icon={<Moon size={17} />}
