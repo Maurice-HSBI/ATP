@@ -11,6 +11,7 @@ import {
   Download,
   Gauge,
   Info,
+  Moon,
   Network,
   Plus,
   RadioTower,
@@ -45,6 +46,9 @@ import type {
 } from './types'
 
 const STORAGE_KEY = 'energy-simulation-config-v1'
+const THEME_STORAGE_KEY = 'energy-simulation-theme-v1'
+
+type Theme = 'light' | 'dark'
 
 interface NumberFieldProps {
   label: string
@@ -163,8 +167,13 @@ function loadInitialConfig(): SimulationConfig {
   }
 }
 
+function loadInitialTheme(): Theme {
+  return localStorage.getItem(THEME_STORAGE_KEY) === 'dark' ? 'dark' : 'light'
+}
+
 function App() {
   const [config, setConfig] = useState<SimulationConfig>(loadInitialConfig)
+  const [theme, setTheme] = useState<Theme>(loadInitialTheme)
   const [activeView, setActiveView] = useState<'calculator' | 'mesh-concept'>(
     'calculator',
   )
@@ -176,6 +185,11 @@ function App() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(config))
   }, [config])
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    localStorage.setItem(THEME_STORAGE_KEY, theme)
+  }, [theme])
 
   function updateRoot(patch: Partial<SimulationConfig>) {
     setConfig((current) => ({
@@ -369,25 +383,47 @@ function App() {
             Synchrones Mesh
           </button>
         </nav>
-        {activeView === 'calculator' && (
-          <div className="topbar-actions">
-            <span className="save-status">
-              <Check size={15} aria-hidden="true" /> Lokal gespeichert
-            </span>
-            <button className="button secondary" type="button" onClick={exportCsv}>
-              <Download size={17} aria-hidden="true" /> CSV
-            </button>
-            <button
-              className="icon-button"
-              type="button"
-              title="Planungsprofil zurücksetzen"
-              aria-label="Planungsprofil zurücksetzen"
-              onClick={() => setConfig(getDefaultConfig())}
-            >
-              <RotateCcw size={18} aria-hidden="true" />
-            </button>
-          </div>
-        )}
+        <div className="topbar-actions">
+          <button
+            className="icon-button theme-toggle"
+            type="button"
+            aria-label="Dunkelmodus"
+            aria-pressed={theme === 'dark'}
+            title={
+              theme === 'dark'
+                ? 'Hellmodus aktivieren'
+                : 'Dark Mode aktivieren'
+            }
+            onClick={() =>
+              setTheme((current) => (current === 'light' ? 'dark' : 'light'))
+            }
+          >
+            {theme === 'dark' ? (
+              <Sun size={18} aria-hidden="true" />
+            ) : (
+              <Moon size={18} aria-hidden="true" />
+            )}
+          </button>
+          {activeView === 'calculator' && (
+            <>
+              <span className="save-status">
+                <Check size={15} aria-hidden="true" /> Lokal gespeichert
+              </span>
+              <button className="button secondary" type="button" onClick={exportCsv}>
+                <Download size={17} aria-hidden="true" /> CSV
+              </button>
+              <button
+                className="icon-button"
+                type="button"
+                title="Planungsprofil zurücksetzen"
+                aria-label="Planungsprofil zurücksetzen"
+                onClick={() => setConfig(getDefaultConfig())}
+              >
+                <RotateCcw size={18} aria-hidden="true" />
+              </button>
+            </>
+          )}
+        </div>
       </header>
 
       <section

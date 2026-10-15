@@ -1,4 +1,5 @@
 :root {
+  color-scheme: light;
   --ink: #172522;
   --text: #3d4a47;
   --muted: #6e7a77;
@@ -10,11 +11,37 @@
   --teal: #176b68;
   --teal-dark: #10514f;
   --teal-soft: #dceceb;
+  --focus-ring: #dceceb;
   --coral: #d2643f;
   --yellow: #d5a326;
   --danger: #a63f32;
   --success: #28754b;
   --shadow: 0 8px 24px rgba(36, 55, 49, 0.08);
+  --on-primary: #ffffff;
+  --on-primary-muted: #c8ded9;
+  --brand-shadow: #bbcbc4;
+  --surface-overlay: rgba(255, 255, 255, 0.55);
+  --active-shadow: 0 1px 5px rgba(32, 57, 50, 0.12);
+  --danger-surface: #fff7f5;
+  --danger-line: #d7a39a;
+  --disabled: #98a19e;
+  --surface-accent: #eef5f3;
+  --progress-track: #e4e9e6;
+  --line-subtle: #e4e9e6;
+  --line-faint: #e6ebe8;
+  --warning-surface: #fff8e7;
+  --warning-border: #dfc88b;
+  --warning-text: #754b13;
+  --warning-heading: #60400f;
+  --warning-muted: #75551d;
+  --warning-accent: #8b5e00;
+  --warning-accent-border: #d8bd72;
+  --success-border: #8cc0a3;
+  --teal-border: #b7d5d1;
+  --phase-track: #d6ded9;
+  --danger-glow: rgba(166, 63, 50, 0.45);
+  --success-glow: rgba(40, 117, 75, 0.4);
+  --grid-line: rgba(52, 79, 70, 0.035);
   --sans: Bahnschrift, 'DIN Alternate', 'Segoe UI', sans-serif;
   --mono: 'Cascadia Code', Consolas, monospace;
 
@@ -29,6 +56,52 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --ink: #e8efec;
+  --text: #c0ccc7;
+  --muted: #9baaa4;
+  --line: #35463f;
+  --line-strong: #53625c;
+  --surface: #1b2723;
+  --surface-soft: #24332e;
+  --page: #111916;
+  --teal: #2f9f94;
+  --teal-dark: #96d4c9;
+  --teal-soft: #1d3b35;
+  --focus-ring: rgba(47, 159, 148, 0.32);
+  --coral: #e48a6a;
+  --yellow: #dfb84e;
+  --danger: #f08b80;
+  --success: #74ca91;
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  --on-primary: #0c231f;
+  --on-primary-muted: #0c231f;
+  --brand-shadow: #22362f;
+  --surface-overlay: rgba(255, 255, 255, 0.04);
+  --active-shadow: 0 1px 5px rgba(0, 0, 0, 0.32);
+  --danger-surface: #382522;
+  --danger-line: #8a594f;
+  --disabled: #76847e;
+  --surface-accent: #203a34;
+  --progress-track: #384940;
+  --line-subtle: #34443e;
+  --line-faint: #2e3d37;
+  --warning-surface: #382f1e;
+  --warning-border: #695832;
+  --warning-text: #e7c775;
+  --warning-heading: #f1dda5;
+  --warning-muted: #d7c38f;
+  --warning-accent: #e6bf58;
+  --warning-accent-border: #806b38;
+  --success-border: #508363;
+  --teal-border: #3d665d;
+  --phase-track: #3a4b44;
+  --danger-glow: rgba(240, 139, 128, 0.45);
+  --success-glow: rgba(116, 202, 145, 0.4);
+  --grid-line: rgba(183, 204, 195, 0.045);
 }
 
 * {
@@ -46,8 +119,8 @@ body {
   min-height: 100vh;
   background-color: var(--page);
   background-image:
-    linear-gradient(rgba(52, 79, 70, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(52, 79, 70, 0.035) 1px, transparent 1px);
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
