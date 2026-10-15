@@ -586,6 +586,10 @@
   border-left: 1px solid var(--line);
 }
 
+.embedded-calculation {
+  display: none;
+}
+
 .solar-context-controls {
   display: grid;
   gap: 8px;
@@ -671,11 +675,11 @@
 
 .result-overview {
   padding: 20px;
-  color: #dfeae6;
-  background-color: #172522;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  color: var(--result-text);
+  background-color: var(--result-surface);
+  background-image: linear-gradient(var(--result-grid-line) 1px, transparent 1px);
   background-size: 100% 8px;
-  border: 1px solid #0d1816;
+  border: 1px solid var(--result-border);
 }
 
 .result-mode {
@@ -683,9 +687,9 @@
   align-items: center;
   gap: 7px;
   padding: 5px 7px;
-  color: #9fcac3;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--result-accent);
+  background: var(--result-mode-surface);
+  border: 1px solid var(--result-mode-border);
   border-radius: 3px;
   font-family: var(--mono);
   font-size: 0.68rem;
@@ -701,12 +705,12 @@
 .primary-result span,
 .overview-grid span,
 .overview-grid small {
-  color: #9fada9;
+  color: var(--result-muted);
   font-size: 0.72rem;
 }
 
 .primary-result strong {
-  color: #fff;
+  color: var(--result-text);
   font-family: var(--mono);
   font-size: 2.45rem;
   line-height: 1;
@@ -716,7 +720,7 @@
 .overview-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  border-top: 1px solid var(--result-divider);
 }
 
 .overview-grid > div {
@@ -727,11 +731,11 @@
 
 .overview-grid > div + div {
   padding-left: 18px;
-  border-left: 1px solid rgba(255, 255, 255, 0.14);
+  border-left: 1px solid var(--result-divider);
 }
 
 .overview-grid strong {
-  color: #fff;
+  color: var(--result-text);
   font-family: var(--mono);
   font-size: 1rem;
 }
@@ -795,6 +799,33 @@
   padding: 0;
 }
 
+@media (min-width: 981px) {
+  .panel.embedded-calculation {
+    display: block;
+    padding: 20px;
+  }
+
+  .conclusion-heading {
+    margin-bottom: 12px;
+  }
+
+  .conclusion-heading h3 {
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 650;
+    text-transform: uppercase;
+  }
+
+  .embedded-calculation summary {
+    padding-inline: 0;
+  }
+
+  .side-calculation {
+    display: none;
+  }
+}
+
 .calculation-panel details {
   overflow: hidden;
 }
@@ -841,11 +872,12 @@
 
 .calculation-table-wrap,
 .solar-calculation {
-  overflow: hidden;
+  overflow-x: auto;
 }
 
 .calculation-panel table {
   width: 100%;
+  min-width: 760px;
   border-collapse: collapse;
   table-layout: fixed;
   font-size: 0.72rem;
@@ -868,10 +900,20 @@
 }
 
 .calculation-panel tbody th {
-  width: 25%;
+  width: 16%;
   color: var(--ink);
   font-weight: 600;
   text-align: left;
+}
+
+.calculation-panel th:nth-child(2),
+.calculation-panel td:nth-child(2) {
+  width: 32%;
+}
+
+.calculation-panel th:nth-child(3),
+.calculation-panel td:nth-child(3) {
+  width: 34%;
 }
 
 .calculation-panel td:last-child,
@@ -899,6 +941,11 @@
   overflow-wrap: anywhere;
 }
 
+.calculation-panel td.formula,
+.calculation-panel td.formula-values {
+  display: table-cell;
+}
+
 .formula {
   color: var(--teal-dark);
   font-family: var(--mono);
@@ -906,7 +953,6 @@
 }
 
 .formula-values {
-  margin-top: 3px;
   color: var(--muted);
   font-family: var(--mono);
   font-size: 0.65rem;

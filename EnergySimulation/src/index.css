@@ -42,6 +42,15 @@
   --danger-glow: rgba(166, 63, 50, 0.45);
   --success-glow: rgba(40, 117, 75, 0.4);
   --grid-line: rgba(52, 79, 70, 0.035);
+  --result-surface: var(--surface);
+  --result-border: var(--line);
+  --result-text: #172522;
+  --result-muted: #55716b;
+  --result-accent: #176b68;
+  --result-mode-surface: rgba(23, 107, 104, 0.08);
+  --result-mode-border: rgba(23, 107, 104, 0.2);
+  --result-divider: #c7dad5;
+  --result-grid-line: transparent;
   --sans: Bahnschrift, 'DIN Alternate', 'Segoe UI', sans-serif;
   --mono: 'Cascadia Code', Consolas, monospace;
 
@@ -102,6 +111,15 @@
   --danger-glow: rgba(240, 139, 128, 0.45);
   --success-glow: rgba(116, 202, 145, 0.4);
   --grid-line: rgba(183, 204, 195, 0.045);
+  --result-surface: #172522;
+  --result-border: #0d1816;
+  --result-text: #ffffff;
+  --result-muted: #9fada9;
+  --result-accent: #9fcac3;
+  --result-mode-surface: rgba(255, 255, 255, 0.06);
+  --result-mode-border: rgba(255, 255, 255, 0.12);
+  --result-divider: rgba(255, 255, 255, 0.14);
+  --result-grid-line: rgba(255, 255, 255, 0.035);
 }
 
 * {

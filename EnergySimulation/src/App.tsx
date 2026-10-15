@@ -1049,6 +1049,13 @@ function App() {
               </div>
             </div>
           </section>
+          <CalculationPanel
+            className="panel embedded-calculation"
+            calculationLines={calculationLines}
+            solarCalculationLines={solarCalculationLines}
+            dailyChargeMah={result.dailyChargeMah}
+            isEmbedded
+          />
         </div>
 
         <aside className="results-column" aria-label="Berechnungsergebnisse">
@@ -1103,72 +1110,13 @@ function App() {
             </div>
           </section>
 
-          <section className="result-panel calculation-panel">
-            <details open>
-              <summary>
-                <ResultHeading
-                  icon={<Calculator size={18} />}
-                  title="Rechenaufstellung"
-                />
-                <span>Live mit den Eingabewerten</span>
-              </summary>
-              <div className="calculation-table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th scope="col">Position</th>
-                      <th scope="col">Formel und eingesetzte Werte</th>
-                      <th scope="col">mAh/Tag</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {calculationLines.map((line) => (
-                      <tr key={line.id}>
-                        <th scope="row">{line.label}</th>
-                        <td>
-                          <span className="formula">{line.formula}</span>
-                          <span className="formula-values">{line.values}</span>
-                        </td>
-                        <td>{formatNumber(line.chargeMah, 3)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <th scope="row" colSpan={2}>
-                        Summe Tagesverbrauch
-                      </th>
-                      <td>{formatNumber(result.dailyChargeMah, 3)}</td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-              <div className="solar-calculation">
-                <h3>Solarbilanz</h3>
-                <table>
-                  <thead>
-                    <tr>
-                      <th scope="col">Position</th>
-                      <th scope="col">Formel und eingesetzte Werte</th>
-                      <th scope="col">Ergebnis</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {solarCalculationLines.map((line) => (
-                      <tr key={line.id}>
-                        <th scope="row">{line.label}</th>
-                        <td>
-                          <span className="formula">{line.formula}</span>
-                          <span className="formula-values">{line.values}</span>
-                        </td>
-                        <td>{line.result}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </details>
-          </section>
+          <CalculationPanel
+            className="result-panel side-calculation"
+            calculationLines={calculationLines}
+            solarCalculationLines={solarCalculationLines}
+            dailyChargeMah={result.dailyChargeMah}
+            isEmbedded={false}
+          />
 
           <section className="result-panel">
             <ResultHeading icon={<BatteryCharging size={18} />} title="Laufzeitprognose" />
@@ -1246,6 +1194,93 @@ function App() {
 
 interface ChildrenProps {
   children?: React.ReactNode
+}
+
+function CalculationPanel({
+  className,
+  calculationLines,
+  solarCalculationLines,
+  dailyChargeMah,
+  isEmbedded,
+}: {
+  className: string
+  calculationLines: CalculationLine[]
+  solarCalculationLines: SolarCalculationLine[]
+  dailyChargeMah: number
+  isEmbedded: boolean
+}) {
+  return (
+    <section className={`calculation-panel ${className}`}>
+      {isEmbedded && (
+        <div className="conclusion-heading">
+          <span className="eyebrow">Fazit</span>
+          <h3>Rechenaufstellung</h3>
+        </div>
+      )}
+      <details open>
+        <summary>
+          <ResultHeading
+            icon={<Calculator size={18} />}
+            title={isEmbedded ? 'Berechnung im Detail' : 'Rechenaufstellung'}
+          />
+          <span>Live mit den Eingabewerten</span>
+        </summary>
+        <div className="calculation-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Position</th>
+                <th scope="col">Formel</th>
+                <th scope="col">Eingesetzte Werte</th>
+                <th scope="col">mAh/Tag</th>
+              </tr>
+            </thead>
+            <tbody>
+              {calculationLines.map((line) => (
+                <tr key={line.id}>
+                  <th scope="row">{line.label}</th>
+                  <td className="formula">{line.formula}</td>
+                  <td className="formula-values">{line.values}</td>
+                  <td>{formatNumber(line.chargeMah, 3)}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr>
+                <th scope="row" colSpan={3}>
+                  Summe Tagesverbrauch
+                </th>
+                <td>{formatNumber(dailyChargeMah, 3)}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <div className="solar-calculation">
+          <h3>Solarbilanz</h3>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Position</th>
+                <th scope="col">Formel</th>
+                <th scope="col">Eingesetzte Werte</th>
+                <th scope="col">Ergebnis</th>
+              </tr>
+            </thead>
+            <tbody>
+              {solarCalculationLines.map((line) => (
+                <tr key={line.id}>
+                  <th scope="row">{line.label}</th>
+                  <td className="formula">{line.formula}</td>
+                  <td className="formula-values">{line.values}</td>
+                  <td>{line.result}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </section>
+  )
 }
 
 function PanelHeader({
